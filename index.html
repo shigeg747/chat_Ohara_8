@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Chat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kosugi&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <script src="https://kit.fontawesome.com/710c0d1402.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/strage.css">
+</head>
+<body>
+    <div id="wrapper">
+        <div class="head">
+            <div class="topname">
+                <p id="atena">NAME:</p>
+                <p id="user"></p>
+            </div>
+        </div>
+        <form action="submit"></form> 
+            <div>
+                <textarea id="text" rows="3" class="textarea"></textarea>
+                <ui class='btn_wrapper'>
+                    <li id="send" class="btn">save</li>
+                    <li id="clear" class="btn">delate</li>
+            </div>
+        </form>
+
+        <!-- 検索窓 -->
+        <!-- <select name="find" id="find"> -->
+            <!-- <option value="name" id="name">name</option> -->
+            <!-- <option value="comment" id="comment">comment</option>
+        </select> -->
+        <div class="underscore">
+            <input type="text" id="search-text" class="search-text" placeholder="検索ワードを入力">
+            <div class="wordcounter">
+                <b>あと</b>：<span class="count"></span>文字
+            </div>
+        </div>
+        <div class="search-result">
+            <div class="search-result__hit-num"></div>
+            <div id="search-result__list"></div>
+        </div>
+        <!-- リスト表示 -->
+        <div id="output" class="output"></div>
+    </div>
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  
+
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.1.1/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+    https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+// Your web app's Firebase configuration
+var firebaseConfig = {
+    apiKey: "AIzaSyBUOpzJeU7dWVUio3qDakvrgAQ9UBbUHao",
+    authDomain: "dev18-chat01-cf845.firebaseapp.com",
+    databaseURL: "https://dev18-chat01-cf845.firebaseio.com",
+    projectId: "dev18-chat01-cf845",
+    storageBucket: "dev18-chat01-cf845.appspot.com",
+    messagingSenderId: "20338284463",
+    appId: "1:20338284463:web:960f0a97245cf2f865815a"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+let newPostRef = firebase.database().ref();
+// const result = window.prompt("ユーザー名を入力してください")
+// console.log(result);
+
+
+// パネルに受信表示
+newPostRef.on("child_added", function(data){
+  const v = data.val();
+  const k = data.key;
+  // console.log(k);
+
+  // const str = `<dl><dt>${v.username}</dt><dd>${v.text} </dd></dl>`;
+  // const str = '<dt>' + v.username + '</dt><dd>' + v.text + '</dd>';
+  let str ='';
+  str += '<dl>';
+  str += '<dt id="searchdt">' + v.username + '</dt>';
+  str += '<dd id="searchdd">' + v.text + '</dd>';
+  str += '</dl>'
+  // このように 変数 strを何度も使用する（代入→再代入）場合は　let　を使用する
+
+  // const btn = '<button>'+'消去'+'</button>'
+  $("#output").append( str );
+  // $("btn.this").remove(key.this);
+  // $("#send")
+  // document.getElementById('send').append(addHtml)
+  
+});
+
+function send(){
+    newPostRef.push({
+        username: $("#user").html(),
+        text: $("#text").val()
+    });
+    $("#text").val("");
+}
+
+
+// 送信処理　テキストエリアに入力あり→送信、なし→何もしない
+// 「未完成」ボタンを隠すイベント
+// $("#send").prop("disabled", true);
+// $("form").change(function (){
+//     let flag = true;
+//     if ($("#text").text() === "") {
+//          flag = false;
+//     }
+//     if (flag) {
+//     //送信ボタンを復活
+//         $("#send").prop("disabled", false);
+//     }else {
+//     //送信ボタンを閉じる
+//         $("#send").prop("disabled", true);
+//     }
+   
+// });
+
+$("#send").on("click", function(){
+  const textwords = $("#text").val();
+    if(!textwords.match(/\S/g)){
+        return false;
+      }else if(textwords  == ""){
+        return false;
+        $("#send").prop("disabled", true);
+      }else if(textwords  != ""){
+      send()   
+      }
+  
+
+//   if(textwords  != ""){
+//       send()   
+//       }else if(textwords  == ""){
+//         $.noop;
+//       }else if(!textwords.replace(/r?n/g, '')){
+//         $.noop;
+//       }
+});
+
+// 消去　→確認キャンセルでそのまま
+document.getElementById('clear').onclick = function(){
+    let comf = confirm("いいのですね？");
+    if(comf == true){
+  newPostRef.remove()
+}else if(comf == false){
+    ;
+}
+}
+   
+</script>
+<script src="js/strage.js"></script>
+
+</body>
+</html> 
